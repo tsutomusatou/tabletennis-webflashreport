@@ -1,0 +1,39 @@
+table {
+    border-collapse: collapse;
+    /* width: 80%; */
+}
+ 
+table td {
+    border: solid 1px black;
+    /* width: 20px; */
+    /*実線 1px 黒*/
+}
+
+.score {
+  border: solid 1px black;
+  width: 30px;
+  /*実線 1px 黒*/
+}
+
+  /*余白と文字装飾は省略*/
+.final {
+      background: #cce4ff;
+      width: 30px;
+}
+
+.player {
+  width: 100px;
+}
+
+.game {
+  padding: 0.25em 0.5em;/*上下 左右の余白*/
+  background: transparent;/*背景透明に*/
+  border-left: solid 5px  #cce4ff;/*左線*/
+}
+
+.match {
+  background: #cce4ff; /*背景色*/
+  padding: 0.2em;/*文字周りの余白*/
+  border-radius: 0.7em;/*角の丸み*/
+  width: 110px;
+}

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<!-- <meta http-equiv="refresh" content="30"> -->
+<title>試合速報</title>
+<link rel="stylesheet" href="css/index.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+	<p id="scoretable">
+<script>
+let match = [];
+
+$.when(
+	$.ajax({
+		type: 'GET',
+		url: 'GAS Web App URL of spread sheet for players list',
+		dataType: 'jsonp',
+		jsonpCallback: 'jsondata',
+		success: function(json){
+			let len = json.length;
+
+			for(let i=0; i<len;i++){
+				let idplayers = [json[i].matchid, json[i].playera, json[i].playerb];
+				match.push(idplayers);
+			}
+			console.log(match);
+		}
+	})
+).done(function() {
+	$.ajax({
+		type: 'GET',
+		url: 'GAS Web App URL of spread sheet for match result',
+		dataType: 'jsonp',
+		jsonpCallback: 'jsondata',
+		success: function(json){
+			const gamecnt_max = 5;
+
+			let score = [];
+			for (let i=0;i < match.length; i++){
+				score[i] = [[],[],[],[],[]];
+			}
+
+			for(let i=0; i < json.length; i++){
+				for(let j=0; j < match.length; j++){
+					if(match[j][0] == json[i].matchid){ // Check match id
+						let gamecntsplit = json[i].gamecount.split('-');
+						let gamecnt = Number(gamecntsplit[0]) + Number(gamecntsplit[1]);
+						let scoresplit = json[i].gamescore.split('-');
+						score[j][gamecnt].push(Number(scoresplit[0]));
+						score[j][gamecnt].push(Number(scoresplit[1]));
+						
+					}
+				}	
+			}
+			console.log(score);
+
+
+			for(let i=0; i < match.length; i++){
+				let matchid = match[i][0];
+				let playera = match[i][1];
+				let playerb = match[i][2];
+				$("#scoretable").append('<p class="match"> MATCH ' + matchid + '</p>'  + playera + ' vs ' + playerb + '<br>');
+				for(let j=0; j < gamecnt_max; j++){
+					$("#scoretable").append('<p class="game">GAME ' + (j+1));
+					if(score[i][j].length != 0) {
+						let html_a = '';
+						let html_b = '';
+						for(let k=0; k < score[i][j].length; k=k+2){
+							let a = score[i][j][k];
+							let b = score[i][j][k+1];
+							if(k>=2){
+								if(score[i][j][k] == score[i][j][k-2]){
+									a = '';
+								}
+								if(score[i][j][k+1] == score[i][j][k-1]){
+									b = '';
+								}
+							}
+							html_a += '<td align="center" class="score">' + a + '</td>'
+							html_b += '<td align="center" class="score">' + b + '</td>'
+						}
+						let html_score_a_final = '<td class="final" align="center">' + score[i][j][score[i][j].length-2] + '</td>';
+						let html_score_b_final = '<td class="final" align="center">' + score[i][j][score[i][j].length-1] + '</td>';
+						html = '<table><tr><td class="player">' + playera + '</td>' + html_score_a_final + html_a + '</tr><tr><td class="player">' + playerb + '</td>' + html_score_b_final + html_b + '</tr></table><br>';
+						$("#scoretable").append(html);
+					} 
+					else { // Game has not started yet. 0 vs 0.
+						html = '<table><tr><td class="player">' + playera + '</td><td class="final" align="center">0</td></tr><tr><td class="player">' + playerb + '</td><td class="final" align="center">0</td></tr></table><br>';
+						$("#scoretable").append(html);
+					}
+				}
+			}
+			
+		}
+	})
+});
+
+
+</script>
+</body>
+</html>
